@@ -93,12 +93,31 @@ lspconfig.cssls.setup {
   },
 }
 
+
+local function organize_imports()
+  local params = {
+    command = "_typescript.organizeImports",
+    arguments = {vim.api.nvim_buf_get_name(0)},
+    title = ""
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
+vim.api.nvim_create_autocmd('BufWritePre', {
+    callback = organize_imports
+})
+
 lspconfig.tsserver.setup {
   on_attach = on_attach,
   filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
   cmd = { "typescript-language-server", "--stdio" },
   capabilities = capabilities,
-  -- root_dir = util.root_pattern ".git",
+  commands = {
+    OrganizeImports = {
+      organize_imports,
+      description = "Organize Imports"
+    }
+  },
   settings = {
     typescript = {
       referencesCodeLens = { enabled = true, showOnAllFunctions = true },
